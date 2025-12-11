@@ -63,15 +63,14 @@ runs:
         TARGET_FILE="resources/environments/environment_${ENV}.properties"
 
         # Update properties file using sed - variables already loaded by Python script
-        sed -i'' \
-          -e "s|^base\.url=.*|base.url=${BASE_URL}|" \
-          -e "s|^target\.browser=.*|target.browser=${TARGET_BROWSER}|" \
-          -e "s|^web\.run\.mode=.*|web.run.mode=${WEB_RUN_MODE}|" \
-          -e "s|^selenium\.grid\.url=.*|selenium.grid.url=${SELENIUM_GRID_URL}|" \
-          -e "s|^chrome\.args=.*|chrome.args=${CHROME_ARGS}|" \
-          -e "s|^chrome\.driver\.path=.*|chrome.driver.path=${CHROME_DRIVER_PATH}|" \
-          -e "s|^chrome\.binary\.path=.*|chrome.binary.path=${CHROME_BINARY_PATH}|" \
-          "$TARGET_FILE"
+        # Only replace if variable has a value (otherwise keep default from example file)
+        [ -n "${BASE_URL}" ] && sed -i'' -e "s|^base\.url=.*|base.url=${BASE_URL}|" "$TARGET_FILE"
+        [ -n "${TARGET_BROWSER}" ] && sed -i'' -e "s|^target\.browser=.*|target.browser=${TARGET_BROWSER}|" "$TARGET_FILE"
+        [ -n "${WEB_RUN_MODE}" ] && sed -i'' -e "s|^web\.run\.mode=.*|web.run.mode=${WEB_RUN_MODE}|" "$TARGET_FILE"
+        [ -n "${SELENIUM_GRID_URL}" ] && sed -i'' -e "s|^selenium\.grid\.url=.*|selenium.grid.url=${SELENIUM_GRID_URL}|" "$TARGET_FILE"
+        [ -n "${CHROME_ARGS}" ] && sed -i'' -e "s|^chrome\.args=.*|chrome.args=${CHROME_ARGS}|" "$TARGET_FILE"
+        [ -n "${CHROME_DRIVER_PATH}" ] && sed -i'' -e "s|^chrome\.driver\.path=.*|chrome.driver.path=${CHROME_DRIVER_PATH}|" "$TARGET_FILE"
+        [ -n "${CHROME_BINARY_PATH}" ] && sed -i'' -e "s|^chrome\.binary\.path=.*|chrome.binary.path=${CHROME_BINARY_PATH}|" "$TARGET_FILE"
 
         echo "Updated properties file: $TARGET_FILE"
         echo ""
