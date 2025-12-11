@@ -74,9 +74,19 @@ runs:
           "$TARGET_FILE"
 
         echo "Updated properties file: $TARGET_FILE"
-        echo "--- File contents ---"
+        echo ""
+        echo "=== Environment Variables (for debugging) ==="
+        echo "BASE_URL: ${BASE_URL:-<not set>}"
+        echo "TARGET_BROWSER: ${TARGET_BROWSER:-<not set>}"
+        echo "WEB_RUN_MODE: ${WEB_RUN_MODE:-<not set>}"
+        echo "SELENIUM_GRID_URL: ${SELENIUM_GRID_URL:-<not set>}"
+        echo "CHROME_ARGS: ${CHROME_ARGS:-<not set>}"
+        echo "CHROME_DRIVER_PATH: ${CHROME_DRIVER_PATH:-<not set>}"
+        echo "CHROME_BINARY_PATH: ${CHROME_BINARY_PATH:-<not set>}"
+        echo ""
+        echo "=== Generated Properties File Contents ==="
         cat "$TARGET_FILE"
-        echo "--- End of file ---"
+        echo "=== End of Properties File ==="
 
     - name: Verify generated file
       shell: bash
