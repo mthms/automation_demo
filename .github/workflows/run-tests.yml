@@ -53,7 +53,8 @@ jobs:
         env:
           ENV: ${{ github.event.inputs.environment || 'testing' }}
         run: |
-          mvn clean test -Denv=${{ github.event.inputs.environment || 'testing' }} \
+          mvn clean test --no-transfer-progress \
+            -Denv=${{ github.event.inputs.environment || 'testing' }} \
             -Dweb.run.mode=localheadless
 
       - name: Publish Allure Report
