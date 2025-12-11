@@ -36,8 +36,9 @@ jobs:
         uses: ./.github/actions/generate-env-config
         with:
           environment: ${{ github.event.inputs.environment || 'testing' }}
-          vars_json: ${{ toJSON(vars) }}
-          secrets_json: ${{ toJSON(secrets) }}
+        env:
+          GHA_VARS_JSON: ${{ toJson(vars) }}
+          GHA_SECRETS_JSON: ${{ toJson(secrets) }}
 
       - name: Cache Maven dependencies
         uses: actions/cache@v4

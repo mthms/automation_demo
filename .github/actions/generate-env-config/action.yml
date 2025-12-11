@@ -4,12 +4,6 @@ inputs:
   environment:
     description: 'Environment name (e.g., testing, staging, production)'
     required: true
-  vars_json:
-    description: 'JSON string containing all repository variables'
-    required: true
-  secrets_json:
-    description: 'JSON string containing all repository secrets'
-    required: true
 runs:
   using: 'composite'
   steps:
@@ -25,9 +19,6 @@ runs:
 
     - name: Load all repo vars & secrets into env
       shell: bash
-      env:
-        GHA_VARS_JSON: ${{ inputs.vars_json }}
-        GHA_SECRETS_JSON: ${{ inputs.secrets_json }}
       run: |
         echo "=== Debug: Input lengths ==="
         echo "vars_json length: ${#GHA_VARS_JSON}"
