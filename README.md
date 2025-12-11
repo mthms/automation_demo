@@ -476,7 +476,7 @@ Test cases are tracked in `hotel_reservations_test_cases.csv` with an `Automated
 
 2. **Create Test Class**:
    ```java
-   // src/test/java/base/web/...
+   // src/test/java/web/...
    public class NewTests extends BaseTest {
        @Test
        public void testMethod() {
@@ -495,30 +495,3 @@ Test cases are tracked in `hotel_reservations_test_cases.csv` with an `Automated
 - Use meaningful variable and method names
 - Add Javadoc comments for public methods
 - Keep page objects focused and single-responsibility
-
-### Pull Request Process
-
-1. Create a feature branch
-2. Make your changes
-3. Ensure all tests pass locally
-4. Update documentation if needed
-5. Create a pull request with a clear description
-
-## 📝 License
-
-[Specify your license here]
-
-## 👥 Authors
-
-[Specify authors/contributors here]
-
-## 🔗 Resources
-
-- [Selenium Documentation](https://www.selenium.dev/documentation/)
-- [TestNG Documentation](https://testng.org/doc/documentation-main.html)
-- [Allure Documentation](https://docs.qameta.io/allure/)
-- [Page Object Model Pattern](https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models/)
-
----
-
-**Happy Testing! 🚀**
