@@ -29,22 +29,44 @@ runs:
         GHA_VARS_JSON: ${{ inputs.vars_json }}
         GHA_SECRETS_JSON: ${{ inputs.secrets_json }}
       run: |
+        echo "=== Debug: Input lengths ==="
+        echo "vars_json length: ${#GHA_VARS_JSON}"
+        echo "secrets_json length: ${#GHA_SECRETS_JSON}"
+        echo ""
+        echo "=== Debug: First 200 chars of vars_json ==="
+        echo "${GHA_VARS_JSON:0:200}"
+        echo ""
+        echo "=== Debug: First 200 chars of secrets_json ==="
+        echo "${GHA_SECRETS_JSON:0:200}"
+        echo ""
+        
         python3 - "$GITHUB_ENV" <<'PY'
         import os, sys, json
         out = sys.argv[1]
         
         def load(name):
           s = os.environ.get(name)
+          print(f"Loading {name}: length={len(s) if s else 0}")
           if not s:
+            print(f"  -> Empty, returning {{}}")
             return {}
           try:
-            return json.loads(s)
-          except Exception:
+            parsed = json.loads(s)
+            print(f"  -> Parsed successfully, {len(parsed)} keys")
+            return parsed
+          except Exception as e:
+            print(f"  -> JSON parse error: {e}")
             return {}
         
+        vars_dict = load("GHA_VARS_JSON")
+        secrets_dict = load("GHA_SECRETS_JSON")
+        
         merged = {}
-        merged.update(load("GHA_VARS_JSON"))
-        merged.update(load("GHA_SECRETS_JSON"))
+        merged.update(vars_dict)
+        merged.update(secrets_dict)
+        
+        print(f"Total merged keys: {len(merged)}")
+        print(f"Keys: {list(merged.keys())[:10]}...")  # Show first 10 keys
         
         with open(out, "a") as f:
           for k, v in merged.items():
@@ -53,6 +75,8 @@ runs:
               f.write(f"{k}<<EOF\n{v}\nEOF\n")
             else:
               f.write(f"{k}={v}\n")
+        
+        print(f"Wrote {len(merged)} variables to $GITHUB_ENV")
         PY
 
     - name: Update properties file
