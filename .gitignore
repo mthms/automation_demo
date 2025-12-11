@@ -1,28 +1,50 @@
+# Maven
 target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-.kotlin
 
-### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+# Allure
+allure-results/
+allure-report/
+allure-history/
+.allure/
+
+# IDE - IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
+out/
 
-### Eclipse ###
+# IDE - Eclipse
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.recommenders
 
-### NetBeans ###
+# IDE - VS Code
+.vscode/
+*.code-workspace
+
+# IDE - NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -32,8 +54,47 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
-.vscode/
-
-### Mac OS ###
+# OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test results
+test-output/
+test-results/
+surefire-reports/
+failsafe-reports/
+
+# Driver binaries (exclude everything except .txt files)
+resources/drivers/webdrivers/*
+!resources/drivers/webdrivers/*.txt
+
+# Environment files (only include .example files, exclude all others)
+resources/environments/*
+!resources/environments/*.example
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Coverage reports
+coverage/
+.nyc_output/
+*.lcov
+
