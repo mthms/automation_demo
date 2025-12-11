@@ -19,11 +19,34 @@ runs:
         fi
         allure --version
 
-    - name: Generate Allure Report
+    - name: Check Allure Results
       shell: bash
       run: |
+        echo "Checking for Allure results..."
+        if [ -d "target/allure-results" ] && [ -n "$(ls -A target/allure-results 2>/dev/null)" ]; then
+          echo "✓ Allure results found in target/allure-results:"
+          ls -la target/allure-results/ | head -20
+          echo "Total files: $(find target/allure-results -type f | wc -l)"
+        else
+          echo "⚠️  No Allure results found in target/allure-results"
+          echo "Listing target directory contents:"
+          ls -la target/ 2>/dev/null || echo "target directory does not exist"
+        fi
+
+    - name: Generate Allure Report (Maven)
+      shell: bash
+      run: |
+        mvn allure:report --no-transfer-progress
+
+    - name: Generate Allure Report (CLI)
+      shell: bash
+      run: |
+        if [ ! -d "target/allure-results" ] || [ -z "$(ls -A target/allure-results 2>/dev/null)" ]; then
+          echo "⚠️  No Allure results to generate report from (CLI)"
+          exit 0
+        fi
         allure generate target/allure-results -o target/allure-report --clean
-        echo "Allure report generated successfully"
+        echo "Allure report generated successfully (CLI)"
 
     - name: Upload Allure Report as Artifact
       uses: actions/upload-artifact@v4
