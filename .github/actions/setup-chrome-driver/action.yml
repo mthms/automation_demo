@@ -52,10 +52,13 @@ runs:
 
         curl -L -o chromedriver.zip "$DRIVER_URL"
         unzip -o chromedriver.zip
+        
+        # Move chromedriver from extracted directory to current directory
         if [[ -d chromedriver-* ]]; then
-          mv chromedriver-*/chromedriver chromedriver 2>/dev/null || \
-            mv chromedriver-*/chromedriver.exe chromedriver
+          find chromedriver-* -name "chromedriver" -type f -exec mv {} chromedriver \;
+          find chromedriver-* -name "chromedriver.exe" -type f -exec mv {} chromedriver \;
         fi
+        
         chmod +x chromedriver
         rm -rf chromedriver.zip chromedriver-*
 
