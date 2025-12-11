@@ -1,0 +1,151 @@
+ID,Business component,Module,Case Title,Numbered steps,Expected result,Preconditions,Automated
+TC-001,Admin Panel,Authorization & session management,Successful admin login with valid credentials,"1. Navigate to the Admin URL.
+2. Enter a valid admin username.
+3. Enter the matching valid password.
+4. Click the 'Login' button.",Admin is redirected to the Admin dashboard (Rooms tab) and the Logout button is visible in the header.,Valid admin username and password exist.,Yes
+TC-002,Admin Panel,Authorization & session management,Unsuccessful admin login with invalid password,"1. Navigate to the Admin URL.
+2. Enter a valid admin username.
+3. Enter an invalid password.
+4. Click the 'Login' button.",Login is rejected and a proper error message is displayed. Admin remains on login page and is not logged in.,Valid admin username exists.,Yes
+TC-003,Admin Panel,Authorization & session management,Unsuccessful admin login with empty credentials,"1. Navigate to the Admin URL.
+2. Leave Username and Password fields empty.
+3. Click the 'Login' button.",Validation messages are displayed for required fields and login attempt is not performed.,None.,Yes
+TC-004,Admin Panel,Authorization & session management,Access admin pages without an active session,"1. Ensure you are logged out of the admin area.
+2. Attempt to open a direct admin URL (e.g. /admin/rooms or /admin/report) in the browser.
+3. Observe the behaviour.",User is redirected to the Admin login page and cannot view admin content without authentication.,User is not logged in to admin.,No
+TC-005,Admin Panel,Authorization & session management,Admin logout from any admin page,"1. Log in to admin successfully.
+2. On any admin page, click the 'Logout' button in the header.
+3. Observe the page behaviour.
+4. Try to use Back browser button to return to admin page.","User is redirected to login page. After logout, accessing admin URLs or using browser back should not restore admin session.",Admin is logged in.,No
+TC-006,Admin Panel,Authorization & session management,Session timeout or expiry behaviour,"1. Log in to the admin panel.
+2. Leave the session idle for the defined timeout period (or simulate timeout).
+3. Attempt to perform any admin action (e.g. open Rooms or Report tab).
+4. Observe behaviour.","If session expires, admin is redirected to login page and must reauthenticate before performing actions.",Admin is logged in; session timeout configuration known.,No
+TC-007,Admin Panel,Rooms availability,"Verify default rooms are displayed in admin (101, 102, 103)","1. Log in to admin.
+2. Navigate to the 'Rooms' tab.
+3. Observe the room list table.","Rooms with IDs 101, 102 and 103 are displayed with correct Type, Accessibility, Price and Room details.",System is in default state (no rooms removed).,No
+TC-008,Admin Panel,Rooms availability,Create a new room with minimum required data,"1. Log in to admin and open the 'Rooms' tab.
+2. In the create room row, enter a unique Room # (e.g. 104).
+3. Select a Type (e.g. 'Single').
+4. Set Accessible value.
+5. Enter a valid Price >= 1.
+6. Select at least one feature checkbox if required.
+7. Click 'Create'.","New room is created and appears in the rooms grid with the same room number, type, accessibility, price and features.",Room number to be created does not already exist.,No
+TC-009,Admin Panel,Rooms availability,Create a room without entering a room name/number,"1. Log in and open the 'Rooms' tab.
+2. Leave the Room # field empty.
+3. Fill all other fields with valid values.
+4. Click 'Create'.",Room creation is blocked and validation message 'Room name must be set' (or similar) is displayed in the error banner.,None.,No
+TC-010,Admin Panel,Rooms availability,Create a room with price less than 1,"1. Log in and open the 'Rooms' tab.
+2. Enter a unique Room #.
+3. Select valid Type and Accessible values.
+4. Enter 0 or a negative value in Price field.
+5. Click 'Create'.",Room creation is rejected and a validation message such as 'must be greater than or equal to 1' is displayed.,None.,No
+TC-011,Admin Panel,Rooms availability,Create a room with all available features selected,"1. Log in and open the 'Rooms' tab.
+2. Enter a unique Room #.
+3. Select Type and Accessible.
+4. Enter valid Price.
+5. Select all room features (WiFi, TV, Radio, Safe, Refreshments, Views etc.).
+6. Click 'Create'.",Room is created with all selected features and the features list is displayed correctly in admin grid and on user rooms page.,No existing room with the same number; mapping between admin features and user room details is configured.,No
+TC-012,Admin Panel,Rooms availability,Create multiple rooms sequentially with different feature combinations,"1. Log in and open 'Rooms' tab.
+2. Create Room 201 with WiFi only.
+3. Create Room 202 with TV and Safe.
+4. Create Room 203 with no extra features selected.
+5. Save each room.
+6. Verify room list.",All rooms are created successfully with their own feature combinations shown correctly in the rooms table.,"Room numbers 201, 202, 203 are not currently used.",No
+TC-013,Admin Panel,Rooms availability,Prevent creation of room with duplicate room number,"1. Log in and open 'Rooms' tab.
+2. Note an existing room number (e.g. 101).
+3. Attempt to create a new room using the same Room #.
+4. Fill all other fields with valid values.
+5. Click 'Create'.",System rejects creation or displays an error indicating the room number is already in use. Existing room is not modified.,At least one room exists in the system (e.g. 101).,No
+TC-014,Admin Panel,Rooms availability,Edit an existing room and update price,"1. Log in and open 'Rooms' tab.
+2. Locate room 102.
+3. Click into the Price field and change it to a new valid value.
+4. Save/update the room (using the provided UI interaction).
+5. Refresh the page.",Updated price is saved and displayed in the rooms grid and reflected on the public rooms page.,Room 102 exists; note original price for comparison.,No
+TC-015,Admin Panel,Rooms availability,Edit an existing room to toggle accessibility flag,"1. Log in and open 'Rooms' tab.
+2. Locate a room with Accessible set to true.
+3. Change Accessible to false.
+4. Save/update the room.
+5. Refresh the page and re-open the public rooms page.",Accessibility value is updated in admin grid and public room information reflects the new accessibility state.,At least one accessible room exists.,No
+TC-016,Admin Panel,Rooms availability,Delete an existing room with no reservations,"1. Log in and open 'Rooms' tab.
+2. Identify a room with no reservations associated.
+3. Click the delete (X) icon for that room.
+4. Confirm deletion if prompted.
+5. Refresh the page.",Selected room is removed from the admin rooms list and no longer appears on the user rooms page.,Selected room must not have any active or future reservations.,No
+TC-017,Core functionalities,Reservations handling,Attempt to delete a room that has existing reservations,"1. Ensure room 102 has at least one future reservation.
+2. Log in to admin and open 'Rooms' tab.
+3. Locate room 102.
+4. Click the delete (X) icon.
+5. Observe system behaviour and messages.",System prevents deletion; suitable error message is displayed (e.g. 'Room cannot be deleted because it has reservations'). No reservation data is lost.,At least one future reservation exists for room 102.,No
+TC-018,Core functionalities,Reservations handling,Verify room with reservations still appears in admin and user views,"1. Create or locate existing reservations for room 102.
+2. Open admin 'Rooms' tab.
+3. Open user Rooms page.
+4. Verify visibility of room 102 in both views.",Room with active reservations continues to be listed in admin and user rooms list so that reservations remain valid.,At least one future reservation for room 102 exists.,No
+TC-019,Core functionalities,Reservations handling,Verify calendar report displays reservations for each room,"1. Ensure at least one reservation exists for room 102 covering multiple days.
+2. Log in to admin and open 'Report' tab.
+3. Navigate to the month where reservations exist.
+4. Observe the calendar entries.",Reservation blocks appear on the calendar with correct guest name and 'Room: <number>' label spanning reserved dates.,Existing reservations with known dates for room 102.,No
+TC-020,Core functionalities,Reservations handling,Verify reservation deletion or cancellation updates calendar report,"1. Create a reservation for room 101 on future dates.
+2. Confirm it appears on the Report calendar.
+3. Cancel/delete the reservation using available functionality (admin or API).
+4. Refresh the Report tab.",Cancelled reservation is no longer displayed on the calendar and room becomes available for those dates.,Ability to cancel or delete reservations is available and a reservation for room 101 exists.,No
+TC-021,Core functionalities,Reservations handling,Prevent overlapping reservations for the same room and dates,"1. On user booking page, create a reservation for room 102 from date A to date B.
+2. Attempt to create another reservation for the same room 102 with overlapping dates (partially or fully).
+3. Submit the second reservation.",System should reject the second reservation or show an error indicating the room is not available for selected dates.,Reservation module supports date selection and validation; at least one existing reservation for given range is present.,No
+TC-022,User Interface,Reservations handling,Create reservation for Single room from public rooms page,"1. Open public site front page.
+2. Scroll to 'Our Rooms' section.
+3. Under 'Single' room card, click 'Book now'.
+4. Fill all mandatory booking details (name, email, dates etc.).
+5. Submit the booking form.",Reservation is created successfully and user receives a confirmation message. Reservation is visible in admin Report tab.,Single room (Room 101) exists and has availability for selected dates.,No
+TC-023,User Interface,Reservations handling,Create reservation for Double and Suite rooms on non-overlapping dates,"1. From public rooms page, book a Double room for selected date range.
+2. After confirmation, navigate back and book a Suite room for a different date range.
+3. Verify both bookings.",Both reservations are created and appear separately on admin Report calendar with correct room numbers and dates.,Rooms 102 and 103 are available for the chosen dates.,No
+TC-024,User Interface,Reservations handling,Attempt to create reservation with missing mandatory guest data,"1. Open booking form from any room.
+2. Leave one or more mandatory fields blank (e.g. Name or Check-in date).
+3. Click the submit button.",Reservation is not created and validation messages indicate which fields are required.,Booking form indicates required fields.,No
+TC-025,User Interface,Reservations handling,Attempt to create reservation with check-out date before check-in date,"1. Open booking form.
+2. Select a check-in date after the check-out date.
+3. Submit the form.","System rejects the booking, shows validation error for incorrect date range and does not create a reservation.",Date pickers allow selecting various date combinations.,No
+TC-026,Core functionalities,Reservations handling,Verify reservations cannot be created for past dates,"1. Open booking form.
+2. Select check-in and check-out dates in the past.
+3. Submit the form.",Booking is rejected and system displays error stating that past dates are not allowed.,System date is correctly configured.,No
+TC-027,Core functionalities,Reservations handling,Verify reservation details are stored correctly,"1. Create a booking from public site providing unique guest name and dates.
+2. Log in to admin and open 'Report' tab.
+3. Locate the reservation in the calendar and open its details (if UI allows) or inspect stored data.
+4. Compare values.","Guest name, room number and date range in admin match exactly what user entered on booking form.",Ability to view reservation details in admin exists.,No
+TC-028,Core functionalities,Reservations handling,Create consecutive back-to-back reservations for same room,"1. Book room 101 from 1st to 5th of the month.
+2. Book again room 101 from 5th to 10th of the same month.
+3. Verify both bookings on calendar.","System allows back-to-back reservations where the second check-in equals first reservation's check-out, with no overlapping errors.",Room 101 is free for entire range; calendar view is functional.,No
+TC-029,Core functionalities,Reservations handling,Verify room availability is independent per room,"1. Book room 101 for specific dates.
+2. Attempt to book room 102 for the same dates.
+3. Submit booking.","Reservation for room 102 is allowed even though room 101 is booked, confirming availability is tracked per room number.",Rooms 101 and 102 exist and both are initially free on selected dates.,No
+TC-030,Core functionalities,Reservations handling,Verify that deleting or disabling a room stops new bookings for that room,"1. Identify room 201 with no existing reservations.
+2. Delete room 201 or mark it as unavailable using admin.
+3. From public site, attempt to start booking for room 201.
+4. Observe room cards and booking options.",Deleted/unavailable room no longer appears as a bookable room on public site and new reservations cannot be created for it.,Room 201 exists initially without reservations.,No
+TC-031,User Interface,UI/UX,Verify public rooms page displays all default rooms with correct information,"1. Navigate to public site front page.
+2. Scroll to 'Our Rooms' section.
+3. Inspect Single, Double and Suite cards.
+4. Compare room type, description, price and features against admin configuration.","Three room cards are displayed for Single, Double and Suite with correct names, prices and listed features (TV, WiFi, Safe, Radio etc.).","Default rooms (101, 102, 103) exist and are configured with descriptions and features.",No
+TC-032,User Interface,UI/UX,Verify 'Book now' button is available and functional for each room type,"1. On public rooms page, locate each room card.
+2. Confirm presence of 'Book now' button under Single, Double and Suite.
+3. Click each button separately.
+4. Observe navigation.",Clicking 'Book now' for any room opens the booking form with that room pre-selected or correctly mapped.,All room cards are displayed.,No
+TC-033,User Interface,UI/UX,Verify admin error banner styling and message content for room validation errors,"1. Log in to admin and open 'Rooms' tab.
+2. Trigger a validation error (e.g. missing room name or invalid price).
+3. Observe the red error banner.
+4. Check message wording and readability.","Error banner is shown with red background, clearly readable text and lists all relevant validation messages, e.g. 'Room name must be set' and 'must be greater than or equal to 1'.",None.,No
+TC-034,Admin Panel,UI/UX,Verify rooms grid updates without layout issues after room create/edit/delete,"1. Log in and open 'Rooms' tab.
+2. Create a new room.
+3. Edit price of an existing room.
+4. Delete a room without reservations.
+5. Observe the layout and ordering of rows after each action.","Room list refreshes correctly after each operation; no duplicated rows, broken alignment or missing columns.",At least one room without reservations for deletion.,No
+TC-035,Admin Panel,Rooms availability,Verify admin can see messages from users in Messages tab,"1. From public Contact page, send an enquiry (e.g. booking enquiry).
+2. Log in to admin and navigate to 'Messages' tab.
+3. Verify the new message entry appears.
+4. Optionally delete the message using X icon.",New message with correct Name and Subject appears in Messages list and can be removed by admin if desired.,Public contact form is functional.,No
+TC-036,User Interface,UI/UX,"Verify navigation between Rooms, Booking and other public sections during booking flow","1. Open public site.
+2. Navigate between Rooms, Booking, Amenities, Location and Contact menu items.
+3. Start a booking from Rooms page.
+4. Use navigation to move away and then return to booking step.
+5. Observe behaviour.",Navigation menu works on all pages; booking flow is reachable from Rooms and Booking menus without broken links or errors.,Public site is accessible.,No
