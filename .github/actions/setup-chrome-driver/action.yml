@@ -53,13 +53,20 @@ runs:
         curl -L -o chromedriver.zip "$DRIVER_URL"
         unzip -o chromedriver.zip
         
-        # Move chromedriver from extracted directory to current directory
-        if [[ -d chromedriver-* ]]; then
-          find chromedriver-* -name "chromedriver" -type f -exec mv {} chromedriver \;
-          find chromedriver-* -name "chromedriver.exe" -type f -exec mv {} chromedriver \;
+        # Find and move chromedriver binary
+        CHROMEDRIVER_BIN=$(find . -name "chromedriver" -type f ! -path "*/.*" | head -1)
+        if [[ -z "$CHROMEDRIVER_BIN" ]]; then
+          CHROMEDRIVER_BIN=$(find . -name "chromedriver.exe" -type f ! -path "*/.*" | head -1)
         fi
         
-        chmod +x chromedriver
+        if [[ -n "$CHROMEDRIVER_BIN" ]]; then
+          mv "$CHROMEDRIVER_BIN" chromedriver
+          chmod +x chromedriver
+        else
+          echo "Error: chromedriver binary not found in extracted archive"
+          exit 1
+        fi
+        
         rm -rf chromedriver.zip chromedriver-*
 
         cd "${GITHUB_WORKSPACE}"
