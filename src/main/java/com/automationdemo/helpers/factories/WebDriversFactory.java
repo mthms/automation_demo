@@ -29,7 +29,8 @@ public class WebDriversFactory {
 
         String mode = configs.getWebRunMode() == null ? "local" : configs.getWebRunMode().toLowerCase();
         return switch (mode) {
-            case "remote" -> createRemoteChromeDriver();
+            case "remoteheadless" -> createRemoteChromeDriver(true);
+            case "remote" -> createRemoteChromeDriver(false);
             case "localheadless", "headless" -> createLocalChromeDriver(true);
             default -> createLocalChromeDriver(false);
         };
@@ -60,9 +61,9 @@ public class WebDriversFactory {
         chromiumLogger.setUseParentHandlers(false);
     }
 
-    private WebDriver createRemoteChromeDriver() {
+    private WebDriver createRemoteChromeDriver(boolean isHeadless) {
         suppressCdpWarnings();
-        ChromeOptions options = buildChromeOptions(configs.isChromeHeadless());
+        ChromeOptions options = buildChromeOptions(isHeadless);
         try {
             URL gridUrl = URI.create(configs.getSeleniumGridUrl()).toURL();
             return new RemoteWebDriver(gridUrl, options);
@@ -71,13 +72,12 @@ public class WebDriversFactory {
         }
     }
 
-    private ChromeOptions buildChromeOptions(boolean forceHeadless) {
+    private ChromeOptions buildChromeOptions(boolean isHeadless) {
         ChromeOptions options = new ChromeOptions();
         if (configs.getChromeBinaryPath() != null && !configs.getChromeBinaryPath().isEmpty()) {
             options.setBinary(configs.getChromeBinaryPath());
         }
-        boolean headless = configs.isChromeHeadless() || forceHeadless;
-        if (headless) {
+        if (isHeadless) {
             options.addArguments("--headless=new");
         }
         configs.getChromeArgs().forEach(options::addArguments);

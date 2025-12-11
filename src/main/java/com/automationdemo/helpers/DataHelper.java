@@ -39,8 +39,6 @@ public class DataHelper {
 
         configs.setChromeBinaryPath(properties.getProperty("chrome.binary.path"));
 
-        configs.setChromeHeadless(Boolean.parseBoolean(properties.getProperty("chrome.headless", "false")));
-
         configs.setChromeArgs(parseArgs(properties.getProperty("chrome.args")));
 
         return configs;

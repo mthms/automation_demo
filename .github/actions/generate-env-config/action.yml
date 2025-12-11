@@ -62,7 +62,6 @@ runs:
           -e "s|^target\.browser=.*|target.browser=${TARGET_BROWSER}|" \
           -e "s|^web\.run\.mode=.*|web.run.mode=${WEB_RUN_MODE}|" \
           -e "s|^selenium\.grid\.url=.*|selenium.grid.url=${SELENIUM_GRID_URL}|" \
-          -e "s|^chrome\.headless=.*|chrome.headless=${CHROME_HEADLESS}|" \
           -e "s|^chrome\.args=.*|chrome.args=${CHROME_ARGS}|" \
           -e "s|^chrome\.driver\.path=.*|chrome.driver.path=${CHROME_DRIVER_PATH}|" \
           -e "s|^chrome\.binary\.path=.*|chrome.binary.path=${CHROME_BINARY_PATH}|" \

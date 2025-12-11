@@ -4,10 +4,9 @@
 #
 base.url=http://localhost:8080
 target.browser=chrome
-# Allowed values: local, localHeadless, remote
+# Allowed values: local, localHeadless, remote, remoteHeadless
 web.run.mode=local
 selenium.grid.url=http://localhost:4444/wd/hub
-chrome.headless=false
 # comma-separated additional Chrome args, e.g. --start-maximized,--disable-gpu
 chrome.args=
 
