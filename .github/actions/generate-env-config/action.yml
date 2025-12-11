@@ -1,0 +1,87 @@
+name: 'Generate Environment Config'
+description: 'Generate environment properties file from GitHub secrets and variables'
+inputs:
+  environment:
+    description: 'Environment name (e.g., testing, staging, production)'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Copy example file
+      shell: bash
+      run: |
+        ENV="${{ inputs.environment }}"
+        EXAMPLE_FILE="resources/environments/environment.properties.example"
+        TARGET_FILE="resources/environments/environment_${ENV}.properties"
+
+        cp "$EXAMPLE_FILE" "$TARGET_FILE"
+        echo "Copied $EXAMPLE_FILE to $TARGET_FILE"
+
+    - name: Load all repo vars & secrets into env
+      shell: bash
+      env:
+        GHA_VARS_JSON: ${{ toJson(vars) }}
+        GHA_SECRETS_JSON: ${{ toJson(secrets) }}
+      run: |
+        python3 - "$GITHUB_ENV" <<'PY'
+        import os, sys, json
+        out = sys.argv[1]
+        
+        def load(name):
+          s = os.environ.get(name)
+          if not s:
+            return {}
+          try:
+            return json.loads(s)
+          except Exception:
+            return {}
+        
+        merged = {}
+        merged.update(load("GHA_VARS_JSON"))
+        merged.update(load("GHA_SECRETS_JSON"))
+        
+        with open(out, "a") as f:
+          for k, v in merged.items():
+            v = "" if v is None else str(v)
+            if "\n" in v:
+              f.write(f"{k}<<EOF\n{v}\nEOF\n")
+            else:
+              f.write(f"{k}={v}\n")
+        PY
+
+    - name: Update properties file
+      shell: bash
+      env:
+        ENV: ${{ inputs.environment }}
+      run: |
+        TARGET_FILE="resources/environments/environment_${ENV}.properties"
+
+        # Update properties file using sed - variables already loaded by Python script
+        sed -i'' \
+          -e "s|^base\.url=.*|base.url=${BASE_URL}|" \
+          -e "s|^target\.browser=.*|target.browser=${TARGET_BROWSER}|" \
+          -e "s|^web\.run\.mode=.*|web.run.mode=${WEB_RUN_MODE}|" \
+          -e "s|^selenium\.grid\.url=.*|selenium.grid.url=${SELENIUM_GRID_URL}|" \
+          -e "s|^chrome\.headless=.*|chrome.headless=${CHROME_HEADLESS}|" \
+          -e "s|^chrome\.args=.*|chrome.args=${CHROME_ARGS}|" \
+          -e "s|^chrome\.driver\.path=.*|chrome.driver.path=${CHROME_DRIVER_PATH}|" \
+          -e "s|^chrome\.binary\.path=.*|chrome.binary.path=${CHROME_BINARY_PATH}|" \
+          "$TARGET_FILE"
+
+        echo "Updated properties file: $TARGET_FILE"
+        echo "--- File contents ---"
+        cat "$TARGET_FILE"
+        echo "--- End of file ---"
+
+    - name: Verify generated file
+      shell: bash
+      run: |
+        ENV="${{ inputs.environment }}"
+        TARGET_FILE="resources/environments/environment_${ENV}.properties"
+
+        if [ ! -f "$TARGET_FILE" ]; then
+          echo "Error: Generated file not found: $TARGET_FILE"
+          exit 1
+        fi
+
+        echo "✓ Environment config file created successfully: $TARGET_FILE"

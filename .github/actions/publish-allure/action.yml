@@ -1,0 +1,42 @@
+name: 'Publish Allure Report'
+description: 'Generate and publish Allure test reports as artifacts'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Allure
+      shell: bash
+      run: |
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+          tar -zxf allure-2.24.0.tgz
+          sudo mv allure-2.24.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+          rm allure-2.24.0.tgz
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          brew install allure
+        elif [[ "$RUNNER_OS" == "Windows" ]]; then
+          choco install allure-commandline -y
+        fi
+        allure --version
+
+    - name: Generate Allure Report
+      shell: bash
+      run: |
+        allure generate target/allure-results -o target/allure-report --clean
+        echo "Allure report generated successfully"
+
+    - name: Upload Allure Report as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-report
+        path: target/allure-report
+        retention-days: 30
+        if-no-files-found: ignore
+
+    - name: Upload Allure Results as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-results
+        path: target/allure-results
+        retention-days: 7
+        if-no-files-found: ignore

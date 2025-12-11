@@ -1,0 +1,64 @@
+name: 'Setup Chrome and ChromeDriver'
+description: 'Install Google Chrome and ChromeDriver for Selenium tests'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Google Chrome
+      shell: bash
+      run: |
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | \
+            sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+' | head -1)
+          CHROME_MAJOR=$(echo $CHROME_VERSION | cut -d. -f1)
+          echo "CHROME_MAJOR=$CHROME_MAJOR" >> $GITHUB_ENV
+          echo "Installed Chrome version: $CHROME_VERSION"
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          brew install --cask google-chrome
+          CHROME_VERSION=$(/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+            --version | grep -oE '\d+\.\d+\.\d+\.\d+' | head -1)
+          CHROME_MAJOR=$(echo $CHROME_VERSION | cut -d. -f1)
+          echo "CHROME_MAJOR=$CHROME_MAJOR" >> $GITHUB_ENV
+          echo "Installed Chrome version: $CHROME_VERSION"
+        fi
+
+    - name: Download ChromeDriver
+      shell: bash
+      run: |
+        DRIVER_DIR="resources/drivers/webdrivers"
+        mkdir -p "$DRIVER_DIR"
+        cd "$DRIVER_DIR"
+
+        # Use latest stable ChromeDriver (matching Chrome version)
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          # Get latest ChromeDriver version from Chrome for Testing
+          CHROMEDRIVER_VERSION=$(curl -s \
+            https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_${CHROME_MAJOR})
+          DRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip"
+          echo "Downloading ChromeDriver $CHROMEDRIVER_VERSION for Linux"
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          CHROMEDRIVER_VERSION=$(curl -s \
+            https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_${CHROME_MAJOR})
+          if [[ $(uname -m) == "arm64" ]]; then
+            DRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROMEDRIVER_VERSION}/mac-arm64/chromedriver-mac-arm64.zip"
+          else
+            DRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROMEDRIVER_VERSION}/mac-x64/chromedriver-mac-x64.zip"
+          fi
+          echo "Downloading ChromeDriver $CHROMEDRIVER_VERSION for macOS"
+        fi
+
+        curl -L -o chromedriver.zip "$DRIVER_URL"
+        unzip -o chromedriver.zip
+        if [[ -d chromedriver-* ]]; then
+          mv chromedriver-*/chromedriver chromedriver 2>/dev/null || \
+            mv chromedriver-*/chromedriver.exe chromedriver
+        fi
+        chmod +x chromedriver
+        rm -rf chromedriver.zip chromedriver-*
+
+        cd "${GITHUB_WORKSPACE}"
+        echo "ChromeDriver installed at: $DRIVER_DIR/chromedriver"
+        "$DRIVER_DIR/chromedriver" --version

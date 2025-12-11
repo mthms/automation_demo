@@ -1,0 +1,67 @@
+name: Run Automation Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Test environment'
+        required: false
+        default: 'testing'
+        type: choice
+        options:
+          - testing
+          - staging
+          - production
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java and Maven
+        uses: ./.github/actions/setup-java-maven
+
+      - name: Setup Chrome and ChromeDriver
+        uses: ./.github/actions/setup-chrome-driver
+
+      - name: Generate Environment Config
+        uses: ./.github/actions/generate-env-config
+        with:
+          environment: ${{ github.event.inputs.environment || 'testing' }}
+        env:
+          GHA_VARS_JSON: ${{ toJson(vars) }}
+          GHA_SECRETS_JSON: ${{ toJson(secrets) }}
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run tests
+        shell: bash
+        env:
+          ENV: ${{ github.event.inputs.environment || 'testing' }}
+        run: |
+          mvn clean test -Denv=${{ github.event.inputs.environment || 'testing' }} \
+            -Dweb.run.mode=localheadless
+
+      - name: Publish Allure Report
+        if: always()
+        uses: ./.github/actions/publish-allure
+
+      - name: Check test results
+        if: failure()
+        shell: bash
+        run: |
+          echo "Tests failed. Check the logs above for details."
+          exit 1
